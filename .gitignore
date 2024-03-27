@@ -1,0 +1,11 @@
+# Ignore virtual environment folders
+venv/
+venv-console/
+
+# Ignore compiled Python files
+__pycache__/
+
+# Ignore log files
+*.log
+
+api/app/config.py
