@@ -47,9 +47,9 @@ jobs:
           MESSAGE: hello world
         with:
           key: ${{ secrets.SSH_KEY_NEW_DEPLOY }}
-          host: example.com
+          host: 103.240.91.206
           port: 22
-          user: john
+          user: root
           destination: /var/www/
           # runs this on remove server
           ssh_before: |
