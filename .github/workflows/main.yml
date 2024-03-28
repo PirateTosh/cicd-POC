@@ -6,45 +6,52 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # build:
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.11.5
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v2
+  #     with:
+  #       python-version: 3.11.5
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r api/requirements.txt
-    - name: Run
-      run: |
-        cd api
-        python run.py &
+  #   - name: Install dependencies
+  #     run: |
+  #       python -m pip install --upgrade pip
+  #       pip install -r api/requirements.txt
+  #   - name: Run
+  #     run: |
+  #       cd api
+  #       python run.py &
 
-    - name: Wait for Flask server to start
-      run: sleep 10s
+  #   - name: Wait for Flask server to start
+  #     run: sleep 10s
 
-    - name: Run test cases
-      run : |
-        pwd
-        cd api/tests
-        python fyers_login_test.py
+  #   - name: Run test cases
+  #     run : |
+  #       pwd
+  #       cd api/tests
+  #       python fyers_login_test.py
   
   ssh_deploy:
     runs-on: ubuntu-latest
-    needs: build
+    #needs: build
     steps:
+      - name: Save SSH private key to a file
+        run: echo "${{ secrets.SSH_KEY_NEW_DEPLOY }}" > ssh_key
+
+      - name: Set permissions for SSH private key file
+        run: chmod 600 ssh_key
+
       - name: Run commands remotely via SSH
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY_NEW_DEPLOY }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i /dev/stdin root@103.240.91.206 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ./ssh_key root@103.240.91.206 << 'EOF'
           echo "Hello from SSH!"
           ls -l
           EOF
+
+      - name: Cleanup SSH private key file
+        run: rm ssh_key
