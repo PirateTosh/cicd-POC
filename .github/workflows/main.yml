@@ -36,29 +36,21 @@ jobs:
         cd api/tests
         python fyers_login_test.py
   
-  deploy:
+  ssh_deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy with rsync
-        uses: BuildPC/rsync-with-ssh-github-actions@master
-        env:
-          HELLO: cool
-          MESSAGE: hello world
-        with:
-          key: ${{ secrets.SSH_KEY_NEW_DEPLOY }}
-          host: 103.240.91.206
-          port: 22
-          user: root
-          destination: /var/www/
-          # runs this on remove server
-          ssh_before: |
-            echo $HELLO
-            echo $MESSAGE
-            ls -lath
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-          # then run these commands
-          ssh_after: |
-            echo $HELLO
-            echo $MESSAGE
-            ls -lath
+      - name: Run commands remotely via SSH
+        uses: BuildPC/ssh-remote-command@v2
+        with:
+          commands: |
+            echo "Hello from SSH!"
+            ls -l
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY_NEW_DEPLOY }}
+          SSH_HOST: 103.240.91.206
+          SSH_PORT: 22
+          SSH_USER: root
