@@ -76,6 +76,8 @@ class TestSuccessfulQuoteRetrieval(unittest.TestCase):
         }
         mock_session_instance.generate_token.return_value = mock_response
         result, status_message = generate_fyers_instance()
+        self.assertIsInstance(status_message, dict)
+
         self.write_to_excel("test_with_correct_access_token", status_message)
 
     #! Function with fake access details
